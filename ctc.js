@@ -1,63 +1,102 @@
 const { el, mount, list } = redom;
 const STORAGE_KEY = 'todos-redom'
 
-class Todo {
+// <div class="icon">
+// </div>Colour
+
+// <div class="icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 121.4 85" width="35" height="25"><path fill="currentColor" d="M 118.9,13.3 C 117.5,8.1 113.4,4 108.2,2.6 98.7,0 60.7,0 60.7,0 60.7,0 22.7,0 13.2,2.5 8.1,3.9 3.9,8.1 2.5,13.3 0,22.8 0,42.5 0,42.5 0,42.5 0,62.3 2.5,71.7 3.9,76.9 8,81 13.2,82.4 22.8,85 60.7,85 60.7,85 c 0,0 38,0 47.5,-2.5 5.2,-1.4 9.3,-5.5 10.7,-10.7 2.5,-9.5 2.5,-29.2 2.5,-29.2 0,0 0.1,-19.8 -2.5,-29.3 z"></path><polygon points="80.2,42.5 48.6,24.3 48.6,60.7 " style="fill:#ffffff"></polygon></svg></div>Video
+
+class Constraint {
+    constructor() {
+        this.el = el("li");
+    }
+    update(data) {
+        this.el.textContent = data;
+    }
+}
+
+class Video {
     constructor() {
         this.el = el("li.todo",
             el("div.view",
-                this.done = el("input.toggle", {
-                    type: "checkbox"
-                }),
-                this.title = el("label"),
-                this.destroy = el("button.destroy"),
+                // this.done = el("input.toggle", {
+                //     type: "checkbox"
+                // }),
+               this.video_title = el(".video_title"),
+               this.video_link = el("a.video_link", el("img")),
+               this.puzzle_link = el("a.puzzle_link", el("img")),
+               this.constraints = list("ul", Constraint),
+               this.puzzle_rules = el(".puzzle_rules"),
+                // this.destroy = el("button.destroy"),
             ),
-            this.edit = el("input.edit", {
-                type: "text"
-            })
+            // this.edit = el("input.edit", {
+            //     type: "text"
+            // })
         );
 
-        this.done.onchange = () => {
-            this.data.done = this.done.checked;
-            this.update(this.data, this.data.index);
-        };
+        // this.done.onchange = () => {
+        //     // this.data.done = this.done.checked;
+        //     this.update(this.data, this.data.index);
+        // };
 
-        this.el.ondblclick = evt => {
-            this.el.classList.add("editing");
-        };
+        // this.el.ondblclick = evt => {
+        //     this.el.classList.add("editing");
+        // };
 
-        this.edit.onkeypress = evt => {
-            if (evt.charCode === 13) {
-                this.data.title = this.edit.value;
-                this.update(this.data, this.data.index);
-                this.el.classList.remove("editing");
-            }
-        };
+        // this.edit.onkeypress = evt => {
+        //     if (evt.charCode === 13) {
+        //         this.data.video_title = this.edit.value;
+        //         this.update(this.data, this.data.index);
+        //         this.el.classList.remove("editing");
+        //     }
+        // };
 
-        this.destroy.onclick = evt => {
-            const event = new CustomEvent("destroy", {
-                detail: this.data
-            });
+        // this.destroy.onclick = evt => {
+        //     const event = new CustomEvent("destroy", {
+        //         detail: this.data
+        //     });
 
-            document.dispatchEvent(event);
-        }
+        //     document.dispatchEvent(event);
+        // }
     }
+
+    // <iframe width="1206" height="678" src="https://www.youtube.com/embed/AxFvFdEuiA0" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
     update(data, index) {
         this.data = data;
         this.data.index = index;
-        this.done.checked = data.done;
-        this.title.textContent = data.title;
-        this.edit.value = data.title;
+        // this.done.checked = data.done;
+        this.video_title.textContent = data.video_title;
+        this.video_link.href = data.video_link;
+        // this.video_link.textContent = data.video_link;
+        let video_img = this.video_link.querySelector("img");
+        // video_img.src = "https://i.ytimg.com/vi/AxFvFdEuiA0/default.jpg";
+        // video_img.width = 120;
+        // video_img.height = 90;
+        video_img.src = "https://i.ytimg.com/vi/AxFvFdEuiA0/mqdefault.jpg";
+        video_img.width = 320;
+        video_img.height = 180;
+        // "youtube.svg";
+        this.puzzle_link.href = data.puzzle_link;
+        // this.puzzle_link.textContent = data.puzzle_link;
+        this.puzzle_link.querySelector("img").src = "puzzle.svg";
 
-        if (data.done) {
-            this.el.classList.add("completed");
-        } else {
-            this.el.classList.remove("completed");
-        }
+        this.puzzle_rules.textContent = data.rules;
+
+        data.constraints.sort();
+        this.constraints.update(data.constraints);
+
+        // this.edit.value = data.video_title;
+
+        // if (data.done) {
+        //     this.el.classList.add("completed");
+        // } else {
+        //     this.el.classList.remove("completed");
+        // }
     }
 }
 
-class TodoApp {
+class VideoApp {
     constructor() {
         this.data = [];
 
@@ -116,13 +155,13 @@ class TodoApp {
                 )
             );
 
-        this.list = list(this.todoList, Todo);
+        this.list = list(this.todoList, Video);
 
         this.create.onsubmit = evt => {
             evt.preventDefault();
             this.data.push({
                 done: false,
-                title: this.createInput.value,
+                video_title: this.createInput.value,
             });
             this.createInput.value = "";
             this.update(this.data);
@@ -159,18 +198,18 @@ class TodoApp {
         });
 
 
-        this.todoStorage = {
-            fetch: () => JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'),
-            save: (todos) => {
-                localStorage.setItem(STORAGE_KEY, JSON.stringify(todos))
-            }
-        }
+        // this.todoStorage = {
+        //     fetch: () => JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'),
+        //     save: (todos) => {
+        //         localStorage.setItem(STORAGE_KEY, JSON.stringify(todos))
+        //     }
+        // }
 
-        this.update(this.todoStorage.fetch());
+        // this.update(this.todoStorage.fetch());
     }
 
     update(data) {
-        this.todoStorage.save(data);
+        // this.todoStorage.save(data);
         this.data = data;
         this.list.update(data);
         this.count.textContent = data.length;
@@ -182,7 +221,7 @@ class TodoApp {
     }
 }
 
-const app = new TodoApp();
+const app = new VideoApp();
 mount(document.body, app);
 
 fetch('db.json',
@@ -193,4 +232,4 @@ fetch('db.json',
           }
       })
     .then(response => response.json())
-    .then(data => app.update(data));
+    .then(data => app.update(data.slice(0, 10)));

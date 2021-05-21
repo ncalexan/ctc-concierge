@@ -30,7 +30,7 @@ def extract_details(data, rules_required=True):
     # print(blob)
 
     rules = None
-    app_url = None
+    puzzle_link = None
 
     j = json.loads(blob)
     details = j["videoDetails"]
@@ -38,11 +38,11 @@ def extract_details(data, rules_required=True):
         if "rules" in block.lower():
             rules = block.strip()
         elif "app.crackingthecryptic.com" in block:
-            app_url = [part for part in block.split() if "app.crackingthecryptic.com" in part][0]
+            puzzle_link = [part for part in block.split() if "app.crackingthecryptic.com" in part][0]
     if rules_required and not rules:
         raise ValueError("NO RULES FOUND IN {}".format(details["shortDescription"]))
 
-    return {"rules": rules, "app_url": app_url, "length": int(details["lengthSeconds"])}
+    return {"rules": rules, "puzzle_link": puzzle_link, "length": int(details["lengthSeconds"])}
 
 soup = BeautifulSoup(data, features="lxml")
 table = soup.find_all('table')[0] # Grab the first table
@@ -54,6 +54,8 @@ table = soup.find_all('table')[0] # Grab the first table
 # columns = [column.get_text().strip() for column in head.find_all('td')[1:]]
 # print(columns)
 # print("---")
+
+print("[")
 
 puzzle_count = 0
 rows = reversed(table.find_all('tr'))
@@ -96,7 +98,7 @@ while puzzle_count < 20:
     constraints = [c.strip() for c in constraints.split(";")]
 
     video = dict(video_title=video_title,
-                 link=link,
+                 video_link=link,
                  video_type=video_type,
                  nature=nature,
                  constraints=constraints,
@@ -110,9 +112,10 @@ while puzzle_count < 20:
     details = extract_details(response.text,
                               rules_required=nature.lower() not in ("classic",))
     video.update(details)
-    print(json.dumps(video))
-
     puzzle_count += 1
+    print(json.dumps(video) + ("," if puzzle_count < 20 else ""))
+
+print("]")
 
     # print(url)
 
@@ -121,6 +124,8 @@ while puzzle_count < 20:
     #     print(column.get_text())
         # column_marker += 1
     # print("---")
+
+# print(json.dumps(videos))
 
 
 # print(details["video_title"])
