@@ -8,7 +8,7 @@ const STORAGE_KEY = 'todos-redom'
 
 class Constraint {
     constructor() {
-        this.el = el("li");
+        this.el = el("li.small.constraint");
     }
     update(data) {
         this.el.textContent = data;
@@ -17,18 +17,33 @@ class Constraint {
 
 class Video {
     constructor() {
-        this.el = el("li.todo",
-            el("div.view",
+        this.el = el("li.row.video",
+            // el("div.row",
                 // this.done = el("input.toggle", {
                 //     type: "checkbox"
                 // }),
-               this.video_title = el(".video_title"),
-               this.video_link = el("a.video_link", el("img")),
-               this.puzzle_link = el("a.puzzle_link", el("img")),
-               this.constraints = list("ul", Constraint),
-               this.puzzle_rules = el(".puzzle_rules"),
+               el("div.col-xs-9",
+                  this.puzzle_link = el("a.puzzle_link",
+                                        this.video_title = el("h3.video_title"),
+                                        // el("img")
+                                       ),
+                  this.puzzle_rules = el("p.puzzle_rules.lead"),
+
+                  el("ul.list-inline",
+                     this.date = el("li"),
+                     this.solver = el("li"),
+                     this.length = el("li"),
+                  ),
+                     
+                  this.constraints = list("ul.list-inline", Constraint),
+               ),
+
+               el("div.col-xs-3",
+                  this.video_link = el("a.video_link", el("img.img-thumbnail.video-thumbnail")),
+               ),
+
                 // this.destroy = el("button.destroy"),
-            ),
+            // ),
             // this.edit = el("input.edit", {
             //     type: "text"
             // })
@@ -77,9 +92,19 @@ class Video {
         video_img.width = 320;
         video_img.height = 180;
         // "youtube.svg";
+
+        this.date.textContent = data.date;
+        this.solver.textContent = data.solver;
+        // https://stackoverflow.com/questions/6312993/javascript-seconds-to-time-string-with-format-hhmmss#comment65343664_25279399.
+        let lengthStr = new Date(1000 * data.length).toISOString().substr(11, 8)
+        while (lengthStr.startsWith("0") || lengthStr.startsWith(":")) {
+            lengthStr = lengthStr.slice(1);
+        }
+        this.length.textContent = lengthStr;
+
         this.puzzle_link.href = data.puzzle_link;
         // this.puzzle_link.textContent = data.puzzle_link;
-        this.puzzle_link.querySelector("img").src = "puzzle.svg";
+        // this.puzzle_link.querySelector("img").src = "puzzle.svg";
 
         this.puzzle_rules.textContent = data.rules;
 
@@ -100,103 +125,106 @@ class VideoApp {
     constructor() {
         this.data = [];
 
-        this.el =
-            el("div",
-                el("section.todoapp",
-                    (this.header = el("header.header",
-                        el("h1.heading", "todos"),
-                        (this.create = el(
-                            "form", {},
-                            (this.createInput = el("input.new-todo", {
-                                type: "text",
-                                placeholder: "What needs to be done?",
-                            })),
-                        ))
-                    )),
-                    (this.main = el("section.main",
-                        el("input#toggle-all.toggle-all", {
-                            type: "checkbox"
-                        }),
-                        el("label", {
-                            for: "toggle-all"
-                        }),
-                        (this.todoList = el("ul.todo-list")),
-                    )),
-                    this.footer = el("footer.footer",
-                        el("span.todo-count", this.count = el("strong", "0"), " items left"),
-                        el("ul.filters",
-                            el("li",
-                                this.onClickAll = el("a.selected", {
-                                    href: "#"
-                                }, "All")
-                            ),
-                            el("li",
-                                this.onClickActive = el("a", {
-                                    href: "#"
-                                }, "Active")
-                            ),
-                            el("li",
-                                this.onClickCompleted = el("a", {
-                                    href: "#"
-                                }, "Completed")
-                            )
-                        ),
-                        this.clear = el("button.clear-completed", "Clear Completed")
-                    )
-                ),
-                el("footer.info",
-                    el("p", "Double-click to edit a todo"),
-                    el("p", "Written by ", el("a", {
-                        href: "https://www.mauroreisvieira.com/"
-                    }, "Mauro Reis Vieira")),
-                    el("p", "Part of ", el("a", {
-                        href: "http://todomvc.com"
-                    }, "TodoMVC"))
-                )
-            );
+        // this.el =
+        //     el("div", (this.todoList = el("ul.todo-list")));
+
+        this.el = (this.todoList = el("ul.todo-list.list-unstyled"));
+// ,
+//             el("div",
+//                 // el("section.todoapp",
+//                     (this.header = el("header.header",
+//                         // el("h1.heading", "todos"),
+//                         (this.create = el(
+//                             "form", {},
+//                             (this.createInput = el("input.new-todo", {
+//                                 type: "text",
+//                                 placeholder: "What needs to be done?",
+//                             })),
+//                         ))
+//                     )),
+//                     (this.main = el("section.main",
+//                         el("input#toggle-all.toggle-all", {
+//                             type: "checkbox"
+//                         }),
+//                         el("label", {
+//                             for: "toggle-all"
+//                         }),
+//                         (this.todoList = el("ul.todo-list")),
+//                     )),
+//                     this.footer = el("footer.footer",
+//                         el("span.todo-count", this.count = el("strong", "0"), " items left"),
+//                         el("ul.filters",
+//                             el("li",
+//                                 this.onClickAll = el("a.selected", {
+//                                     href: "#"
+//                                 }, "All")
+//                             ),
+//                             el("li",
+//                                 this.onClickActive = el("a", {
+//                                     href: "#"
+//                                 }, "Active")
+//                             ),
+//                             el("li",
+//                                 this.onClickCompleted = el("a", {
+//                                     href: "#"
+//                                 }, "Completed")
+//                             )
+//                         ),
+//                         this.clear = el("button.clear-completed", "Clear Completed")
+//                     )
+//                 ),
+//                 el("footer.info",
+//                     el("p", "Double-click to edit a todo"),
+//                     el("p", "Written by ", el("a", {
+//                         href: "https://www.mauroreisvieira.com/"
+//                     }, "Mauro Reis Vieira")),
+//                     el("p", "Part of ", el("a", {
+//                         href: "http://todomvc.com"
+//                     }, "TodoMVC"))
+//                 )
+//             );
 
         this.list = list(this.todoList, Video);
 
-        this.create.onsubmit = evt => {
-            evt.preventDefault();
-            this.data.push({
-                done: false,
-                video_title: this.createInput.value,
-            });
-            this.createInput.value = "";
-            this.update(this.data);
-        };
+        // this.create.onsubmit = evt => {
+        //     evt.preventDefault();
+        //     this.data.push({
+        //         done: false,
+        //         video_title: this.createInput.value,
+        //     });
+        //     this.createInput.value = "";
+        //     this.update(this.data);
+        // };
 
-        this.clear.onclick = evt => {
-            this.update(this.data.filter(item => !item.done));
-        };
+        // this.clear.onclick = evt => {
+        //     this.update(this.data.filter(item => !item.done));
+        // };
 
-        this.onClickAll.onclick = evt => {
-            this.onClickAll.classList.add("selected");
-            this.onClickCompleted.classList.remove("selected");
-            this.onClickActive.classList.remove("selected");
-            this.filter(this.data);
-        };
+        // this.onClickAll.onclick = evt => {
+        //     this.onClickAll.classList.add("selected");
+        //     this.onClickCompleted.classList.remove("selected");
+        //     this.onClickActive.classList.remove("selected");
+        //     this.filter(this.data);
+        // };
 
-        this.onClickActive.onclick = evt => {
-            this.onClickActive.classList.add("selected");
-            this.onClickCompleted.classList.remove("selected");
-            this.onClickAll.classList.remove("selected");
-            this.filter(this.data.filter(item => !item.done));
-        };
+        // this.onClickActive.onclick = evt => {
+        //     this.onClickActive.classList.add("selected");
+        //     this.onClickCompleted.classList.remove("selected");
+        //     this.onClickAll.classList.remove("selected");
+        //     this.filter(this.data.filter(item => !item.done));
+        // };
 
-        this.onClickCompleted.onclick = evt => {
-            this.onClickCompleted.classList.add("selected");
-            this.onClickAll.classList.remove("selected");
-            this.onClickActive.classList.remove("selected");
-            this.filter(this.data.filter(item => item.done));
-        };
+        // this.onClickCompleted.onclick = evt => {
+        //     this.onClickCompleted.classList.add("selected");
+        //     this.onClickAll.classList.remove("selected");
+        //     this.onClickActive.classList.remove("selected");
+        //     this.filter(this.data.filter(item => item.done));
+        // };
 
-        document.addEventListener('destroy', (evt) => {
-            const index = evt.detail.index;
-            this.update([...this.data.slice(0, index), ...this.data.slice(index + 1)]);
-        });
-
+        // document.addEventListener('destroy', (evt) => {
+        //     const index = evt.detail.index;
+        //     this.update([...this.data.slice(0, index), ...this.data.slice(index + 1)]);
+        // });
 
         // this.todoStorage = {
         //     fetch: () => JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'),
@@ -212,17 +240,17 @@ class VideoApp {
         // this.todoStorage.save(data);
         this.data = data;
         this.list.update(data);
-        this.count.textContent = data.length;
+        // this.count.textContent = data.length;
     }
 
     filter(data) {
         this.list.update(data);
-        this.count.textContent = data.length;
+        // this.count.textContent = data.length;
     }
 }
 
 const app = new VideoApp();
-mount(document.body, app);
+mount(document.querySelector("#video_list"), app);
 
 fetch('db.json',
       {
